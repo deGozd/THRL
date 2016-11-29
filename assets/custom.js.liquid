@@ -1,0 +1,11 @@
+
+$(document).ready(function() {
+    for (i = 1; i <= 4; i++) {
+        $('#featured-collections li:nth-of-type(' + i + ')').mouseenter(function() {
+            $('.collection-btn-' + i + '').addClass('animate-collection-btn');
+        });
+        $('#featured-collections li:nth-of-type(' + i + ')').mouseleave(function() {
+            $('.collection-btn-' + i + '').removeClass('animate-collection-btn');
+        });
+    }
+});

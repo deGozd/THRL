@@ -1,0 +1,34 @@
+{% paginate collection.products by 16 %}
+<!-- Filters -->
+<div class="row desc-row">
+    <h1 class="col-xs-12 col-sm-6">{{ collection.title }}</h1>
+    <div class="filterMenu col-xs-12 col-sm-6">
+        <div class="right mob-sort">
+            <label for="sort-by" style="float:left;">Sort by</label> 
+            <select id="sort-by" style="float:left;">
+                <option value="manual">Featured</option>
+                <option value="best-selling">Best Selling</option>
+                <option value="price-descending">Price: High to Low</option>
+                <option value="price-ascending">Price: Low to High</option>
+                <option value="title-ascending">A-Z</option>
+                <option value="title-descending">Z-A</option>
+                <option value="created-descending">Newest to Oldest</option>
+                <option value="created-ascending">Oldest to Newest</option>
+            </select>
+        </div>
+    </div>
+</div>
+<!-- Product Loop -->
+<div id="collections-loop" class="row light">
+    {% include 'product-loop' %}
+</div>
+<!-- Pagination -->
+{% if paginate.pages > 1 %}
+    <div class="row light">
+        <div class="pagination col-xs-12">
+            {{ paginate | default_pagination }}
+        </div>
+    </div>
+{% endif %}
+{% endpaginate %}
+{% include 'collections-script' %}

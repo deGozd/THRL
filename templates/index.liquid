@@ -1,0 +1,159 @@
+<!-- Featured Collections -->
+{% include 'product-carousel' %}
+<div class="alt-grey">
+    <div id="featured-collections" class="row">
+        <!-- Featured Collections Title -->
+        <div class="col-xs-12 title">
+            <h1 class="mod-head">Shop our expanding range of art prints...</h1>
+        </div>
+        <ul class="list-unstyled">
+            <!-- Featured Collection 1 -->
+            <li class="col-xs-12 col-sm-3">
+                <div class="collection-hover image-grow" style="background-position: center center; background-image: url('{{ 'slide-1.png' | asset_img_url : '500x' }}')"> 
+                    <a href="collections/nicky-barkla">
+                        <img src="{{ 'slide-1.png' | asset_img_url: '1x' }}" alt="Wall Art Giclee Print Collection" class="no-visible" />
+                        <div class="collection-btn collection-btn-1">
+                            Shop Nicky Barkla <span class="pushitye"><i class="fa fa-caret-right fa-2x"></span></i>
+                        </div>
+                    </a>
+                </div> 
+            </li>
+            <!-- Featured Collection 2 -->
+            <li class="col-xs-12 col-sm-3">
+                <div class="collection-hover image-grow" style="background-position: center center; background-image: url('{{ 'slide-2.png' | asset_img_url : '500x' }}')"> 
+                    <a href="/collections/adam-hudson">
+                        <img src="{{ 'slide-2.png' | asset_img_url: '1x' }}" alt="Tattoo Flash Collection" class="no-visible" />
+                        <div class="collection-btn collection-btn-2">
+                            Shop Adam Hudson <span class="pushitye"><i class="fa fa-caret-right fa-2x"></span></i>
+                        </div>
+                    </a>
+                </div>
+            </li>    
+            <!-- Featured Collection 3 -->
+            <li class="col-xs-12 col-sm-3">
+                <div class="collection-hover image-grow" style="background-position: center center; background-image: url('{{ 'slide-3.png' | asset_img_url : '500x' }}')"> 
+                    <a href="/collections/fil-thorpe">
+                        <img src="{{ 'slide-3.png' | asset_img_url: '1x' }}" alt="Apparel Collection" class="no-visible" />
+                        <div class="collection-btn collection-btn-3">
+                            Shop Mister Hope <span class="pushitye"><i class="fa fa-caret-right fa-2x"></span></i>
+                        </div>
+                    </a>
+                </div>
+            </li>
+            <!-- Featured Collection 4 -->
+            <li class="col-xs-12 col-sm-3">
+                <div class="collection-hover image-grow" style="background-position: center center; background-image: url('{{ 'slide-4.png' | asset_img_url : '500x' }}')"> 
+                    <a href="/collections/fil-thorpe">
+                        <img src="{{ 'slide-4.png' | asset_img_url: '1x' }}" alt="Apparel Collection" class="no-visible" />
+                        <div class="collection-btn collection-btn-4">
+                            Shop Lukas Stobey <span class="pushitye"><i class="fa fa-caret-right fa-2x"></span></i>
+                        </div>
+                    </a>
+
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- Featured Products -->
+<div id="featured-products" class="row">
+    <div class="col-xs-12 title">
+        <h2 class="mod-head">Shop our favourite picks&#46;&#46;&#46;</h2>
+    </div>
+    <ul class="list-unstyled">
+        <!-- Featured Products Loop -->
+        {% for product in collections.frontpage.products limit: 8 %}
+            <li class="col-xs-12 col-sm-6 col-md-3 product-featured">
+                <div class="shadow framed contain-bg" style="background-image: url({{ product | img_url: '500x' }});">
+                    <a href="{{ product.url | within: collection }}">
+                        <img class="no-visible" src="{{ product | img_url: '1x' }}" alt="{{ product.featured_image.alt | escape }}" />
+                    </a>      
+                    <div class="for-sale">
+                        <div class="sale-details">
+                            <p>
+                                <a href="{{ product.url | within: collection }}">
+                                    <strong><span class="large">{{ product.title }}</span></strong>
+                                </a>
+                                <br>
+                                by <a href="http://www.thrl.co/collections/{{ product.vendor | handleize }}">{{ product.vendor }}</a>
+                                <br>                            
+                                {% if product.compare_at_price > product.price %}
+                                    <span class="compare">{{ product.compare_at_price | money }}</span>
+                                    <br>
+                                    <span class="product-price on-sale" itemprop="price" style="color:#e34;">
+                                        {{ product.price | money }}
+                                    </span>          
+                                {% else %}
+                                    {% if product.price_varies %}
+                                        From 
+                                    {% endif %}
+                                    {{ product.price | money }}
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="clear"></div>
+                        <!-- Quick View -->
+                        <div class="quick-view">
+                            <div class="prod-desc">
+                                <p>{{ product.description }}</p>
+                                <a class="smallish" href="{{ product.url }}">More about this product <i class="fa fa-caret-right" style="margin-top:1px;"></i></a>
+                            </div>
+                            <!-- Quick View Form -->
+                            <form action="/cart/add" method="post" enctype="multipart/form-data">
+                                {% if product.variants.size == 1 %}
+                                    <div class="hidden">
+                                {% endif %}  
+                                    <!-- Product Variants -->
+                                    <div class="product-variants">
+                                        <label style="margin-bottom:10px;">Select your item...</label><br>
+                                        {% if product.type contains 'Shirt' or product.type contains 'Hoodie' or product.type contains 'Sweat' %}
+                                            <select id="product-select" name="id">
+                                                {% for variant in product.variants %}
+                                                    <option{% if variant == product.selected_or_first_available_variant %} selected{% endif %} value="{{ variant.id }}">
+                                                        {{ variant.title }} - {{ variant.price | money }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        {% else %}
+                                            {% for variant in product.variants %}
+                                                {% if variant.available == true %}
+                                                    <div style="background:#DDD; padding:10px;margin-bottom:5px;">
+                                                        <input type="radio" name="id" value="{{variant.id}}" id="radio_{{variant.id}}" {%if forloop.first%} checked="checked" {%endif%} />
+                                                        <label for="radio_{{variant.id}}" style="padding-left:5px;font-weight:400;">{{ variant.price | money_with_currency }} - {{ variant.title }}</label>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                {% if product.variants.size == 1 %}
+                                    </div>
+                                {% endif %}  
+                                <!-- Quantity -->
+                                <div class="quantity">
+                                    <select id="quantity" name="quantity">
+                                        {% for i in (1..10) %}
+                                            <option value="{{ i }}">{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="product-add">
+                                  <button type="submit" name="add" id="add" style="text-transform:uppercase;font-size:0.8em;padding:10px;width:100%; font-size:20px;"class="btn">
+                                      <i class="fa fa-cart-plus"></i>
+                                    </button>
+                                </div>
+                            </form> 
+                        </div>
+                        <div class="btn-add"> 
+                            <button type="submit" class="btn btn-nopad quick-view-btn" style="width:100%;">
+                                <p style="text-transform:uppercase; padding-top:5px;">
+                                    <span class="get-rid" style="font-size:20px"><i class="fa fa-shopping-cart"></i></span>
+                                    <i class="fa newsize fa-caret-up get-rid-of" style="font-size:20px"></i>
+                                </p>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul> 
+</div>

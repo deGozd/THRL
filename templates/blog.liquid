@@ -1,0 +1,63 @@
+<!-- Pagination. -->
+{% paginate blog.articles by 5 %}
+<div class="row light" style="padding-left:20px"> 
+    <h1 class="blogtitle">{{ blog.title }}</h1>
+</div>
+<div class="row dark" style="padding:5px">
+    <!-- Articles -->
+    <div class="col-xs-12 col-sm-9" style="margin-top:20px;">
+        {% for article in blog.articles %}
+            <div class="article{% if forloop.first %} first{% endif %}{% if forloop.last %} last{% endif %} clear">
+                <!-- Article Title -->
+                <h2 class="article-title">
+                    <a href="{{ article.url }}">{{ article.title }}</a>
+                </h2>
+                <!-- Article Date -->
+                <h3 class="date">
+                    <time pubdate datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%b %d, %Y' }}</time>
+                </h3> 
+                <!-- Article Image -->
+                {% if article.image %}
+                    <a href="{{ article.url }}">
+                        <img src="{{ article.image.src | img_url: '1024x1024' }}" />
+                    </a>
+                {% endif %}
+                <!-- Article Excerpt -->
+                {% if article.excerpt.size > 0 %}
+                    <div class="no-images">{{ article.excerpt }}</div>
+                {% else %}
+                    <p style="margin-bottom:10px;">{{ article.content | strip_html | truncatewords: 90 }}</p>
+                {% endif %}
+                <!-- Read More -->
+                <p class="read-more-blog">
+                    <a class="btn btn-blog" href="{{ article.url }}">Read more <i class="fa fa-caret-right"></i></a>
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+    <!-- Aside -->
+    <div class="col-xs-12 col-sm-3 aside"> 
+        <!-- Social Media -->
+        <div class="blog-social"> 
+            <h3 class="recent-posts">Connect</h3>
+            <i class="fa fa-instagram"></i>
+            <i class="fa fa-twitter"></i>
+            <i class="fa fa-pinterest"></i>
+            <i class="fa fa-facebook"></i>
+        </div>
+        <!-- Recent Posts -->
+        <h3 class="recent-posts">Recent Posts</h3>
+        <ul class="list-unstyled" style="padding-bottom:20px;">
+            {% for article in blog.articles %}
+                <li><a href="{{ article.url }}">{{ article.title }}</a></li>
+            {% endfor %}
+        </ul>          
+    </div>
+</div>
+{% if paginate.pages > 1 %}
+    <div class="pagination">
+        {{ paginate | default_pagination | replace: 'Previous', 'Newer articles' | replace: 'Next', 'Older articles' }}
+    </div>
+{% endif %}
+{% endpaginate %}
+

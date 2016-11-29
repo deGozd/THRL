@@ -1,0 +1,185 @@
+{% assign add_to_cart = 'Add to cart' %}
+{% assign sold_out = 'Sold Out' %}
+{% assign unavailable = 'Unavailable' %}
+<div class="row light" itemscope itemtype="http://schema.org/Product">
+    <meta itemprop="url" content="{{ shop.url }}{{ product.url }}" />
+    <meta itemprop="image" content="{{ product | img_url: 'grande' }}" />
+    <!-- Start Form -->
+    <form action="/cart/add" method="post" enctype="multipart/form-data">
+        {% if product.images.size == 0 %}
+            <div class="product-photo-container col-xs-12 col-sm-6">
+                <img src="{{ '' | img_url: '1024x1024' }}" alt="" />
+            </div>    
+        {% else %}
+            {% assign featured_image = product.selected_or_first_available_variant.featured_image | default: product.featured_image %}        
+            <!-- Product Photos Loop -->
+            <div class="product-photo-container col-xs-12 col-sm-6">
+                {% if product.images.size > 1 %}
+                    {% for image in product.images | limit:1 %}
+                        <img src="{{ image | img_url: '1024x1024' }}" alt="{{ product.title | escape }}" />
+                    {% endfor %}
+                {% else %}
+                    <img src="{{ featured_image | img_url: '1024x1024' }}" alt="{{ product.title | escape }}" />
+                {% endif %}
+                {% if product.images.size > 1 %}
+                    <ul class="product-photo-thumbs row clearfix grid list-unstyled">
+                        {% for image in product.images %}
+                            <li class="product-photo-thumb col-xs-3">
+                                <a href="{{ image | img_url: '1024x1024' }}">
+                                    <img src="{{ image | img_url: 'medium' }}" alt="{{ image.alt | escape }}" />
+                                </a>
+                            </li>
+                        {% endfor %}
+                        <!-- Framed Thumbnails -->
+                        {% if product.type contains 'Framed' %
+                            <li class="product-photo-thumb col-xs-3">
+                                <a href="{{ 'frame-1.jpg' | asset_url }}">
+                                    <img src="{{ 'frame-1.jpg' | asset_url }}" />
+                                </a>
+                            </li>
+                            <li class="product-photo-thumb col-xs-3">
+                                <a href="{{ 'frame-2.jpg' | asset_url }}">
+                                    <img src="{{ 'frame-2.jpg' | asset_url }}" />
+                                </a>
+                            </li>
+                            <li class="product-photo-thumb col-xs-3">
+                                <a href="{{ 'frame-3.jpg' | asset_url }}">
+                                    <img src="{{ 'frame-3.jpg' | asset_url }}" />
+                                </a>
+                            </li>
+                        {% endif %}
+                        <!-- Canvas Thumbnails -->
+                        {% if product.type contains 'Canvas' %}
+                            <li class="product-photo-thumb col-xs-3">
+                                <a href="{{ 'canvas-1.jpg' | asset_url }}">
+                                    <img src="{{ 'canvas-1.jpg' | asset_url }}" />
+                                </a>
+                            </li>
+                            <li class="product-photo-thumb col-xs-3">
+                                <a href="{{ 'canvas-2.jpg' | asset_url }}">
+                                    <img src="{{ 'canvas-2.jpg' | asset_url }}" />
+                                </a>
+                            </li>
+                        {% endif %}     
+                    </ul>
+                {% endif %}
+            </div>
+        {% endif %}
+        <div class="product-details col-xs-12 col-sm-6">
+            <div id="product-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="delta">
+                <meta itemprop="priceCurrency" content="{{ shop.currency }}" />
+                {% if product.available %}
+                    <link itemprop="availability" href="http://schema.org/InStock" />
+                {% else %}
+                    <link itemprop="availability" href="http://schema.org/OutOfStock" />
+                {% endif %}     
+                <p>
+                    {% assign variant = product.selected_or_first_available_variant %}
+                    {% if product.compare_at_price > product.price %}
+                        <span class="product-price on-sale" itemprop="price" style="color:#e34">{{ variant.price | money }}</span><br>
+                        <span class="product-compare-price compare">{{ variant.compare_at_price | money }}</span>
+                    {% else %}
+                        <span class="product-price" itemprop="price">{{ variant.price | money }}</span>
+                    {% endif %}
+                </p>
+            </div>
+            <h1 itemprop="name">{{ product.title }}</h1> 
+            {% assign product_vendor_handle = product.vendor | handle %}                    
+            {% if collections[product_vendor_handle].handle == product_vendor_handle %}       
+            {% assign vendor_url = collections[product_vendor_handle].url %}      
+            {% else %}        
+            {% assign vendor_url = product.vendor | url_for_vendor %}     
+            {% endif %} 
+            <h2 itemprop="brand" class="delta"><span style="font-size:0.9em;">by</span> {{ product.vendor | link_to: vendor_url }}</h2>
+            {% if product.tags contains 'exclusive' %}
+                <div><i class="fa fa-star"></i> Exclusive</div>
+            {% endif %}
+            <div id="product-description" class="rte" itemprop="description">
+                <p>{{ product.description }}</p>   
+            </div>
+            {% assign hide_default_title = false %}
+            {% if product.variants.size == 1 and product.variants.first.title contains 'Default' %}
+                {% assign hide_default_title = true %}
+            {% endif %}       
+            {% if product.variants.size == 1 %}
+                <div class="hidden">
+            {% endif %}
+                <div class="product-variants">
+                    <label style="margin-bottom:10px;">Select your item...</label>
+                    <br>
+                    {% if product.type contains 'Shirt' or product.type contains 'Hoodie' or product.type contains 'Sweat' %}
+                        <select id="product-select" name="id">
+                            {% for variant in product.variants %}
+                                <option{% if variant == product.selected_or_first_available_variant %} selected{% endif %} value="{{ variant.id }}">
+                                    {{ variant.title }} - {{ variant.price | money }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        {% for variant in product.variants %}
+                            {% if variant.available == true %}
+                                <div style="background:#DDD; padding:10px;margin-bottom:5px;">
+                                    <input type="radio" name="id" value="{{variant.id}}" id="radio_{{variant.id}}" {%if forloop.first%} checked="checked" {%endif%} />
+                                    <label for="radio_{{variant.id}}" style="padding-left:5px;font-weight:400;">{{ variant.price | money_with_currency }} - {{ variant.title }}</label>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% if product.variants.size == 1 %}
+                </div>
+            {% endif %} 
+            <!-- Quantity -->
+            <div class="quantity">
+                <select id="quantity" name="quantity">
+                    {% for i in (1..10) %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div id="backorder" class="hidden">
+                <p>{{ '%s is back-ordered. We will ship it separately in 10 to 15 days.' | replace: '%s', '<span id="selected-variant"></span>' }}</p>
+            </div>
+            <div id="product-add" style="padding-top:15px; padding-bottom:15px;">
+                <input type="hidden" name="add" class="btn" value="Purchase" style="width:100%;">
+                <button class="btn" style="width:100%; font-size:24px;"><i class="fa fa-cart-plus"></i></button>
+            </div>
+            {% if collection %}
+                {% if collection.previous_product or collection.next_product %}
+                    <div>     
+                        {% if collection.previous_product %}
+                        {% capture prev_url %}{{ collection.previous_product}}#content{% endcapture %}
+                            <span class="left btn-2">{{ '&larr; Previous Product' | link_to: prev_url }}</span>
+                        {% endif %}
+                        {% if collection.next_product %}
+                            {% capture next_url %}{{ collection.next_product}}#content{% endcapture %}
+                            <span class="right btn-2">{{ 'Next Product &rarr;' | link_to: next_url }}</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endif %}
+            <div class="return col-xs-12" style="padding:20px 0;">
+                <a href="javascript:;" class="return-btn">Returns Information</a>
+                <div class="return-policy">
+                    <p>To be eligible for a return, your item must be unused and in the same condition that you received it. It must also be in the original packaging. If 30 days have gone by since your purchase, unfortunately we can’t offer a refund or exchange. To complete your return, we require a receipt or proof of purchase.</p>
+                </div>
+            </div>
+        </div>
+    </form>   
+</div>  
+<!-- Related Products -->
+<div class="row">
+      {% include 'related-products' %}
+</div>
+<script>
+    function goBack() {
+        window.history.back();
+    }
+
+    $( document ).ready(function() {
+        $('.return-policy').hide();
+        $('.return-btn').click(function(){
+            $('.return-policy').slideToggle(300); 
+        });
+    });     
+</script>

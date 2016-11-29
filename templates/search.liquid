@@ -1,0 +1,68 @@
+<div class="row light">
+    <h1 class="col-xs-12 search-title">Search</h1>
+</div>
+<div class="row dark">
+    <div class="search col-xs-12">
+        <center>
+            <form action="/search" method="get" class="search-form" role="search">
+
+                <input name="q" type="search" id="search-field" placeholder="Search store..." value="{{ search.terms | escape }}" />
+
+                <input type="hidden" id="search-submit" value="Search" />
+
+                <button><i class="fa fa-search"></i></button>
+
+            </form>
+        </center>
+    </div>
+</div>
+{% if search.performed %}
+    {% paginate search.results by 10 %}
+        {% if search.results_count == 0 %}  
+            <div class="row light">
+                <p class="col-xs-12" style="padding:20px; font-size:1.2em;">Your search did not yield any results. Try searching again or <a href="/collections/all">browse our selection here.</a></p> 
+            </div>
+        {% else %}
+            <div class="row light results">
+                <ul class="list-unstyled col-xs-12">
+                    {% for item in search.results %}      
+                        <li class="clearfix result">
+                            {% if item.vendor %}
+                                <div class="result-image">
+                                    <a class="left" href="{{ item.url }}" title="{{ item.title | escape }}">
+                                        {{ item | img_url: 'large' | img_tag: item.featured_image.alt }}
+                                    </a>      
+                                    <div class="clear"></div>
+                                    <a href="{{ item.url }}" class="go-back btn btn-blog left" style="width:100%; margin-top:0;">View <i class="fa fa-caret-right"></i></a>
+                                </div>
+                            {% else %}
+                                <div class="result-image">
+                                    <a href="{{ item.url }}" class="go-back btn btn-blog left" style="width:100%; margin-top:0; margin-right:10px;">
+                                        View <i class="fa fa-caret-right"></i>
+                                    </a>
+                                </div>
+                            {% endif %}
+                            <div class="result-info">
+                                <h3 class="search-result-title">{{ item.title | link_to: item.url }}</h3>
+                                <a href="{{ item.url }}" title="{{ item.title | escape }}">
+                                    {{ item.content | strip_html | truncatewords: 40 | highlight: search.terms }}
+                                </a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        {% if search == blank %}
+            <div class="row light">
+                <p class="col-xs-12" style="padding:20px; font-size:1.2em;">Your search did not yield any results. Try searching again or <a href="/collections/all">browse our selection here.</a></p>
+            </div>
+        {% endif %}
+        {% if paginate.pages > 1 %}
+            <div class="pagination row" style="width:100%;">
+                {{ paginate | default_pagination }}
+            </div>
+        {% endif %}
+    {% endpaginate %}      
+{% endif %}  
+

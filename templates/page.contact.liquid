@@ -1,0 +1,33 @@
+<div class="row light page-fix contact-form" style="padding-top:0px; padding-bottom:20px; padding-left:5px;">
+    <div class="col-xs-12 col-sm-12 col-md-6">   
+        <h1 style="margin-bottom:10px">Contact</h1>
+        <p>For all enquiries regarding <b>THRL</b> please use the following contact form.</p>
+        {% form 'contact' %}
+            {% if form.posted_successfully? %}
+                <div class="success-form feedback large" style="margin-bottom:10px;">
+                    Thanks, we'll get back to you soon!
+                </div>
+            {% endif %}
+            {% if form.errors %}
+                <div class="errorForm feedback">
+                    {{ form.errors.size }} or {{ form.errors | size }}
+                    <p>Your contact form has {{ form.errors | size | pluralize: ‘an error’, ‘a few errors’ }}. To submit your form, make the following changes and try again:</p>
+                    {% for field in form.errors %}
+                        <p>The {{ field | capitalize | replace: 'Body', 'Message' }} field {{ form.errors.messages[field] }}.</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <p><label>Name</label></p>
+            <p><input type="text" required id="contactFormName" name="contact[name]"></p>
+            <p><label>E-mail</label></p>
+            <p><input type="email" required id="contactFormEmail" name="contact[email]"></p>
+            <p><label>Subject</label></p>
+            <p><input type="text" required id="contactFormSubject" name="contact[subject]"></p>
+            <p><label>Telephone (Optional)</label></p>
+            <p><input type="telephone" id="contactFormTelephone" name="contact[phone]"></p>
+            <p><label>Message</label></p>
+            <p><textarea required rows="20" id="contactFormMessage" name="contact[body]"></textarea></p>
+            <button type="submit" id="contactFormSubmit" value="Send" class="btn" style="width:100%;font-size:14px;">Send</button>
+        {% endform %}
+    </div>
+</div>

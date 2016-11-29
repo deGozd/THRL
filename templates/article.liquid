@@ -1,0 +1,30 @@
+<div class="article-post row light">
+    <!-- Article Title -->
+    <h1 style="padding-top:15px" class="article-title col-xs-12">
+        {{ article.title }}
+    </h1>
+    <!-- Article Date -->
+    <h3 class="date col-xs-12" style="margin-bottom:15px;">
+        <time pubdate datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%b %d, %Y' }}</time>
+    </h3>
+    <!-- Article Content -->
+    <div class="rte col-xs-12">
+        {{ article.content }}
+    </div>
+    <!-- Article Buttons -->
+    {% if blog.next_article or blog.previous_article %}
+        <p class="clearfix"> 
+            {% if blog.next_article %}
+                <span class="left" style="padding-top:30px; padding-left:15px">{{ '&larr; Next Post' | link_to: blog.next_article }}</span>
+            {% endif %}    
+            {% if blog.previous_article %}
+                <span class="right" style="padding-top:30px; padding-right:15px">{{ 'Previous Post &rarr;' | link_to: blog.previous_article }}</span>
+            {% endif %}
+        </p>
+    {% endif %}
+</div>
+<script>
+    function goBack() {
+        window.history.back();
+    };
+</script>
