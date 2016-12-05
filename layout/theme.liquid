@@ -316,17 +316,10 @@
             $('.mobile-menu-button').click(function(){
                 $('#mobile-menu-browser').slideToggle('slow', 'swing'); 
             });
-            // Click Quick View Button
-            $('.quick-view-btn:eq(0)').click(function(){ 
-                $('.quick-view:eq(0)').slideToggle(300);
-                $('.get-rid:eq(0)').toggle();
-                $('.get-rid-of:eq(0)').toggle();
-            });
             // Search Btn Open
             $('.search-btn-quick').click(function(){
                 $('.search-quick').slideToggle(300);
             });
-
             // Quick View Buttons
             for (i = 1; i <= 15; i++) {
                 $('.quick-view-btn:eq(' + i + ')').click(function(){  
